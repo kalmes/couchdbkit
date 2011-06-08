@@ -360,6 +360,26 @@ class Database(object):
         return doc
     get = open_doc
 
+    def list(self, list_name, view_name, **params):
+    	"""Open a list view from the database. Requires a list that returns JSON.
+    	
+    	Ex: list('designdoc/listid', 'viewdesigndoc/viewid', limit=10, key='foo')
+    	"""
+
+        if list_name.startswith('/'):
+            list_name = list_name[1:]
+        list_name = list_name.split('/')
+        dlname = list_name.pop(0)
+        vlname = '/'.join(list_name)
+		
+        if view_name.startswith('/'):
+	        view_name = view_name[1:]
+
+        list_path = '_design/%s/_list/%s/%s' % (dlname, vlname, view_name)
+
+        doc = self.res.get(list_path, **params).json_body
+        return doc
+
     def all_docs(self, by_seq=False, **params):
         """Get all documents from a database
 
